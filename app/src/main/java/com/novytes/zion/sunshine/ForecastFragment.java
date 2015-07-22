@@ -45,6 +45,13 @@ public class ForecastFragment extends Fragment {
     public ForecastFragment() {
     }
 
+    private void updateWeather(){
+        SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(getActivity());
+        String location = sharedPref.getString(getString(R.string.pref_location_key), getString(R.string.pref_location_default));
+        FetchWeatherTask task = new FetchWeatherTask();
+        task.execute(location);
+    }
+
     @Override
     public void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
@@ -60,10 +67,7 @@ public class ForecastFragment extends Fragment {
     public  boolean onOptionsItemSelected(MenuItem item){
         switch (item.getItemId()){
             case R.id.action_refresh:
-                SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(getActivity());
-                String location = sharedPref.getString(getString(R.string.pref_location_key), getString(R.string.pref_location_default));
-                FetchWeatherTask task = new FetchWeatherTask();
-                task.execute(location);
+                updateWeather();
                 return true;
 //            case R.id.action_settings:
 //                startActivity(new Intent(getActivity(), SettingsActivityTwo.class));
@@ -76,17 +80,8 @@ public class ForecastFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_main, container, false);
-        String placeHolder[] = {
-                "Today - sunny - 88/63",
-                "Tomorrow - Foggy - 70/60",
-                "Weds - Cloudy - 70/65",
-                "Thurs - Rainy - 50/40",
-                "Fri - Foggy - 70/63",
-                 "Sat - Sunny - 88/63",
-                "Sunday - Sunny - 88/63"};
-        List<String> weekForecast = new ArrayList<String>(Arrays.asList(placeHolder));
         mForecastAdapter  = new ArrayAdapter<String>(getActivity(),R.layout.list_item_forecast,
-                R.id.list_item_forecast_textview, weekForecast );
+                R.id.list_item_forecast_textview, new ArrayList<String>() );
         ListView listView = (ListView) rootView.findViewById(
                 R.id.listview_forecast );
         listView.setAdapter(mForecastAdapter);
@@ -103,6 +98,12 @@ public class ForecastFragment extends Fragment {
 
 
         return rootView;
+    }
+
+    @Override
+    public  void  onStart(){
+        super.onStart();
+        updateWeather();
     }
 
 
@@ -222,6 +223,15 @@ public class ForecastFragment extends Fragment {
             }
 
             private String formatHighLows(double high, double low){
+                SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
+                String unitType = sharedPrefs.getString(getString(R.string.temperature_unit),getString(R.string.pref_unit_metric));
+
+                if (unitType.equals(getString(R.string.pref_unit_imperial))){
+                    high = (high * 1.8 ) + 32 ;
+                    low  = (low * 1.8) + 32 ;
+                }else if(!unitType.equals(getString(R.string.pref_unit_metric))){
+                    Log.d(LOG_TAG, "Unit type not found: "+ unitType);
+                }
                 long roundedHigh = Math.round(high);
                 long roundedLow = Math.round(low);
 

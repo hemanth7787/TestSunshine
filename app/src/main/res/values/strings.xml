@@ -8,4 +8,18 @@
     <string name="pref_location_key" translatable="false">location</string>
     <string name="pref_location_label">Location</string>
     <string name="pref_location_default" translatable="false">calicut,india</string>
+    <string name="pref_unit_title">Temperature Unit</string>
+    <string name="temperature_unit">unit</string>
+    <string name="pref_unit_metric">metric</string>
+    <string name="pref_unit_imperial">imperial</string>
+
+
+    <string-array name="pref_unit_options">
+        <item>Metric</item>
+        <item>Imperial</item>
+    </string-array>
+    <string-array name="pref_unit_values">
+        <item>metric</item>
+        <item>imperial</item>
+    </string-array>
 </resources>
