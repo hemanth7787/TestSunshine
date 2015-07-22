@@ -2,8 +2,10 @@ package com.novytes.zion.sunshine;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.AsyncTask;
+import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
 import android.util.Log;
@@ -58,8 +60,10 @@ public class ForecastFragment extends Fragment {
     public  boolean onOptionsItemSelected(MenuItem item){
         switch (item.getItemId()){
             case R.id.action_refresh:
+                SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(getActivity());
+                String location = sharedPref.getString(getString(R.string.pref_location_key), getString(R.string.pref_location_default));
                 FetchWeatherTask task = new FetchWeatherTask();
-                task.execute("calicut,india");
+                task.execute(location);
                 return true;
 //            case R.id.action_settings:
 //                startActivity(new Intent(getActivity(), SettingsActivityTwo.class));
