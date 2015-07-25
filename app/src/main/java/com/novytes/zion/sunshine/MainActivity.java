@@ -3,6 +3,7 @@ package com.novytes.zion.sunshine;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
+import android.os.PersistableBundle;
 import android.preference.PreferenceManager;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
@@ -19,8 +20,38 @@ public class MainActivity extends ActionBarActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        Log.w(LOG_TAG, " OnCreate Triggered");
     }
 
+    @Override
+    protected void onPause() {
+        super.onPause();
+        Log.w(LOG_TAG, " OnPause Triggered");
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        Log.w(LOG_TAG, " OnStop Triggered");
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        Log.w(LOG_TAG, " OnResume Triggered");
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        Log.w(LOG_TAG, " OnStart Triggered");
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        Log.w(LOG_TAG, " OnDestroy Triggered");
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
