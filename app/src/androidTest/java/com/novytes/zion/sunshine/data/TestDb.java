@@ -25,6 +25,7 @@ import java.util.HashSet;
 public class TestDb extends AndroidTestCase {
 
     public static final String LOG_TAG = TestDb.class.getSimpleName();
+    public static long locationRowId = -1;
 
     // Since we want each test to start with a clean slate
     void deleteTheDatabase() {
@@ -122,7 +123,7 @@ public class TestDb extends AndroidTestCase {
         ContentValues testValues = TestUtilities.createNorthPoleLocationValues();
 
         // Insert ContentValues into database and get a row ID back
-        long locationRowId;
+        //long locationRowId;
         locationRowId = db.insert(WeatherContract.LocationEntry.TABLE_NAME, null, testValues);
 
         //verify we got a row id
@@ -157,6 +158,8 @@ public class TestDb extends AndroidTestCase {
         also make use of the validateCurrentRecord function from within TestUtilities.
      */
     public void testWeatherTable() {
+        assertTrue("Error no location key ID", locationRowId != -1);
+        //locationRowId
         // First insert the location, and then use the locationRowId to insert
         // the weather. Make sure to cover as many failure cases as you can.
 
@@ -166,21 +169,40 @@ public class TestDb extends AndroidTestCase {
         // and our testLocationTable can only return void because it's a test.
 
         // First step: Get reference to writable database
+        WeatherDbHelper dbHelper = new WeatherDbHelper(mContext);
+        SQLiteDatabase db = dbHelper.getWritableDatabase();
 
         // Create ContentValues of what you want to insert
+        ContentValues testValues = TestUtilities.createWeatherValues(locationRowId);
         // (you can use the createWeatherValues TestUtilities function if you wish)
 
+        long newLocationRowId = db.insert(WeatherContract.WeatherEntry.TABLE_NAME, null, testValues);
+
+        //verify we got a row id
+        assertTrue("Error: Not inserted in weather table", newLocationRowId != -1);
         // Insert ContentValues into database and get a row ID back
 
         // Query the database and receive a Cursor back
+        Cursor cursor = db.query(WeatherContract.WeatherEntry.TABLE_NAME,
+                null, //all columns
+                null, //Column for where clause
+                null, //values for where clause
+                null, //columns to group by
+                null, //columns to filter by row groups
+                null //sort order
+        );
 
         // Move the cursor to a valid database row
+        assertTrue("Error: No records returned from weather query", cursor.moveToFirst());
 
         // Validate data in resulting Cursor with the original ContentValues
+        TestUtilities.validateCurrentRecord("Error: Location query validation failed", cursor, testValues);
         // (you can use the validateCurrentRecord function in TestUtilities to validate the
-        // query if you like)
+        assertFalse("Error: More than one record returned from weather query", cursor.moveToNext());
 
         // Finally, close the cursor and database
+        cursor.close();
+        db.close();
     }
 
 
